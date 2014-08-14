@@ -1,7 +1,11 @@
 package Selenium::Element;
 
+use strict;
+use warnings;
+
 use Carp;
 use Scalar::Util qw(blessed reftype looks_like_number);
+use Data::Random;
 
 =head1 SYNOPSIS
 
@@ -57,10 +61,10 @@ sub get_tag_name {
     my ($self) = @_;
     confess("Object parameters must be called by an instance") unless ref($self);
     if ($self->{'driver'}) {
-        @parts = split(qr/=/,$self-{'element'});
+        my @parts = split(qr/=/,$self-{'element'});
         #TODO If you can't do it with both of these, you have no business doing it...but this could be expanded to everything eventually...
         confess('WWW::Selenium drivers can only get tag name if selector is of type "id" or "css"') unless scalar(grep {$_ eq $parts[0]} qw(id css));
-        $js = $parts[0] eq 'id' ? 'document.getElementById("'.$parts[1].'").nodeName' : 'document.querySelectorAll("'.$parts[1].'")[0].nodeName';
+        my $js = $parts[0] eq 'id' ? 'document.getElementById("'.$parts[1].'").nodeName' : 'document.querySelectorAll("'.$parts[1].'")[0].nodeName';
         return lc($self->javascript($js));
     }
     return $self->{'element'}->get_tag_name();
@@ -103,7 +107,7 @@ Returns whether the element is an input with type 'text' or 'password' or a text
 sub is_textinput {
     my ($self) = @_;
     confess("Object parameters must be called by an instance") unless ref($self);
-    $itype = $self->get_type();
+    my $itype = $self->get_type();
     my $ret = scalar(grep {$_ eq $itype} ('password', 'text'));
     return $ret || $self->get_tag_name() eq 'textarea';
 }
@@ -219,7 +223,7 @@ sub is_hiddeninput {
     return $self->get_type() eq 'hidden';
 }
 
-=head2 is_hiddeninput
+=head2 is_enabled
 
 Returns whether the element is a disabled input.
 
@@ -362,7 +366,7 @@ sub clear {
     if ($self->{'driver'}) {
         #TODO If you can't do it with both of these, you have no business doing it...but this could be expanded to everything eventually...
         confess('WWW::Selenium drivers can only clear text if selector is of type "id" or "css"') unless scalar(grep {$_ eq $self->{'selector'}->[1]} qw(id css));
-        $js = $self->{'selector'}->[1] eq 'id' ? 'document.getElementById("'.$self->{'selector'}->[0].'").value = ""' : 'document.querySelectorAll("'.$self->{'selector'}->[0].'")[0].value = ""';
+        my $js = $self->{'selector'}->[1] eq 'id' ? 'document.getElementById("'.$self->{'selector'}->[0].'").value = ""' : 'document.querySelectorAll("'.$self->{'selector'}->[0].'")[0].value = ""';
         $self->javascript($js);
     } else {
         $self->{'element'}->clear();
@@ -422,7 +426,7 @@ sub set {
             #TODO make this work a bit more universally if possible
             confess("Setting values on hidden elements without IDs not supported") unless $self->id;
             carp("Setting value of hidden element, this may result in unexpected behavior!");
-            $js = 'document.getElementById("'.$self->id.'").value = \''.$value.'\';';
+            my $js = 'document.getElementById("'.$self->id.'").value = \''.$value.'\';';
             $self->javascript($js);
             $ret = 1;
         } elsif ($self->is_select) {
@@ -459,6 +463,24 @@ sub _doCallback {
     my ($self,$cb) = @_;
     return 0 if !$cb;
     return &$cb($self,$self->{'driver'} ? $self->{'driver'} : $self->{'element'}->{'driver'});
+}
+
+=head2 randomize(options)
+
+Randomizes the input, depending on the type of element.  Useful for fuzzing.
+
+B<INPUT>:
+
+I<HASH>: Options appropraite to the relevant Data::Random method.
+
+B<OUTPUT>:
+
+I<MIXED> - Random value that has been set into the field, or false on failure.
+
+=cut
+
+sub randomize {
+
 }
 
 =head1 STATE CHANGE METHODS
