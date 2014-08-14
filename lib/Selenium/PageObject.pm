@@ -1,11 +1,13 @@
 package Selenium::PageObject;
 {
-    $Selenium::PageObject::VERSION = '0.002';
+    $Selenium::PageObject::VERSION = '0.003';
 }
 
 use Carp;
 use Scalar::Util qw(reftype blessed);
 use Try::Tiny;
+
+use Selenium::Remote::WDKeys; #Needed to send things like tabs for navigation
 use Selenium::Element;
 
 =head1 SYNOPSIS
@@ -24,11 +26,14 @@ Refer to the other module in this distribution L<Selenium::Element> for the rest
 Create a new PageObject using the provided driver, and navigate to the provided URI.
 If you have subclassed your driver, you will need to override this method to not do it's strict driver class checks.
 
-INPUTS:
-  DRIVER (WWW::Selenium or Selenium::Remote::Driver) - The driver object
-  URI (STRING) - the page this object should fiddle with (saved as $self->{'page'})
+B<INPUTS>:
 
-OUTPUTS:
+I<DRIVER (WWW::Selenium or Selenium::Remote::Driver)> - The driver object
+
+I<URI (STRING)> - the page this object should fiddle with (saved as $self->{'page'})
+
+B<OUTPUT>:
+
   new Selenium::PageObject object
 
 =cut
@@ -50,16 +55,33 @@ sub new {
     return $self;
 }
 
+=head1 UTILITY
+
+=head2 driver
+
+The base selenium driver is available to you here.
+
+=cut
+
+sub driver {
+    my $self = shift;
+    return $self->{'driver'};
+}
+
 =head1 GETTERS
 
 =head2 getElement(SELECTOR,SELECTORTYPE)
 
 Get the first element matching the provided selector and selector type.  Refer to your driver's documentation as to valid types.
 
-INPUTS:
-  SELECTOR (STRING) - Instructions for finding some element on the page
-  SELECTORTYPE (STRING) - Specifiation by which above instructions are parsed
-OUTPUTS:
+B<INPUTS>:
+
+I<SELECTOR (STRING)> - Instructions for finding some element on the page
+
+I<SELECTORTYPE (STRING)> - Specifiation by which above instructions are parsed
+
+B<OUTPUT>:
+
   new Selenium::Element object
 
 =cut
@@ -85,11 +107,15 @@ sub getElement {
 Get the elements matching the provided selector and selector type.  Refer to your driver's documentation as to valid types.
 WWW::Selenium is designed to work with single elements, so this method will fail when using it.  Consider refining your selectors and looping instead.
 
-INPUTS:
-  SELECTOR (STRING) - Instructions for finding some element on the page
-  SELECTORTYPE (STRING) - Specifiation by which above instructions are parsed
-OUTPUTS:
-  new Selenium::Element object
+B<INPUTS>:
+
+I<SELECTOR (STRING)> - Instructions for finding some element on the page
+
+I<SELECTORTYPE (STRING)> - Specifiation by which above instructions are parsed
+
+B<OUTPUT>:
+
+  array of new Selenium::Element objects
 
 =cut
 
@@ -101,6 +127,20 @@ sub getElements {
         @elements = $self->{'driver'}->find_elements($selector,$selectortype);
     };
     return map {Selenium::Element->new($_,$self->{'drivertype'} ? $self->{'driver'} : $self->{'drivertype'},[$selector,$selectortype])} @elements;
+}
+
+=head1 GLOBAL EVENTS
+
+=head2 tab
+
+Send a tab to the page, to test tab navigation, or to de-focus the current element (useful for lose focus listeners, etc).
+
+=cut
+
+sub tab {
+    my $self = shift;
+    #9 is VK_TAB
+    $self->{'drivertype'} ? $self->driver->key_press_native(9) : $self->driver->send_keys_to_active_element(KEYS->{'tab'});
 }
 
 1;
