@@ -16,4 +16,4 @@ no_index:
     - inc
 resources:
   repository: https://github.com/teodesian/Selenium-PageObjects-Perl.git
-version: 0.005
+version: 0.006
