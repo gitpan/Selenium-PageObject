@@ -27,16 +27,17 @@ no_index:
 provides:
   Selenium::Element:
     file: lib/Selenium/Element.pm
-    version: '0.006'
+    version: '0.008'
   Selenium::PageObject:
     file: lib/Selenium/PageObject.pm
-    version: '0.007'
+    version: '0.008'
 requires:
   Carp: '0'
+  Data::Random: '0'
   Scalar::Util: '0'
   Selenium::Remote::Driver: '0'
   Try::Tiny: '0'
   perl: '5.010'
 resources:
   repository: https://github.com/teodesian/Selenium-PageObjects-Perl.git
-version: '0.007'
+version: '0.008'

@@ -19,7 +19,8 @@ WriteMakefile(
         "Carp"                     => 0,
         "Scalar::Util"             => 0,
         "Try::Tiny"                => 0,
-        "Selenium::Remote::Driver" => 0 #Used for WDKeys
+        "Selenium::Remote::Driver" => 0, #Used for WDKeys
+        "Data::Random"             => 0
     },
     META_MERGE => {
         'meta-spec' => { version => 2 },
@@ -41,7 +42,8 @@ WriteMakefile(
                     "Carp"                     => 0,
                     "Scalar::Util"             => 0,
                     "Try::Tiny"                => 0,
-                    "Selenium::Remote::Driver" => 0 #Used for WDKeys
+                    "Selenium::Remote::Driver" => 0, #Used for WDKeys
+                    "Data::Random"             => 0
                 }
             },
             test => {
@@ -59,11 +61,11 @@ WriteMakefile(
         provides => {
             'Selenium::PageObject' => {
                 file    => 'lib/Selenium/PageObject.pm',
-                version => '0.007'
+                version => '0.008'
             },
             'Selenium::Element' => {
                 file    => 'lib/Selenium/Element.pm',
-                version => '0.006'
+                version => '0.008'
             }
         }
     }
