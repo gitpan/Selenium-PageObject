@@ -27,10 +27,10 @@ no_index:
 provides:
   Selenium::Element:
     file: lib/Selenium/Element.pm
-    version: '0.008'
+    version: '0.009'
   Selenium::PageObject:
     file: lib/Selenium/PageObject.pm
-    version: '0.008'
+    version: '0.009'
 requires:
   Carp: '0'
   Data::Random: '0'
@@ -40,4 +40,4 @@ requires:
   perl: '5.010'
 resources:
   repository: https://github.com/teodesian/Selenium-PageObjects-Perl.git
-version: '0.008'
+version: '0.009'
