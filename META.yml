@@ -10,6 +10,8 @@ build_requires:
   Test::Deep: '0'
   Test::Fatal: '0'
   Test::More: '0'
+  Test::Pod: '0'
+  Test::Pod::Coverage: '0'
   WWW::Selenium: '0'
 configure_requires:
   ExtUtils::MakeMaker: '0'
@@ -27,10 +29,10 @@ no_index:
 provides:
   Selenium::Element:
     file: lib/Selenium/Element.pm
-    version: '0.009'
+    version: '0.010'
   Selenium::PageObject:
     file: lib/Selenium/PageObject.pm
-    version: '0.009'
+    version: '0.010'
 requires:
   Carp: '0'
   Data::Random: '0'
@@ -40,4 +42,4 @@ requires:
   perl: '5.010'
 resources:
   repository: https://github.com/teodesian/Selenium-PageObjects-Perl.git
-version: '0.009'
+version: '0.010'
