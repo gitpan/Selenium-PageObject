@@ -26,7 +26,6 @@ WriteMakefile(
     },
     META_MERGE => {
         'meta-spec' => { version => 2 },
-        name        => 'Selenium::PageObject',
         abstract    => "Perl implementation of selenium PageObjects",
         author      => ['George S. Baugh <teodesian@cpan.org>'],
         resources   => {
@@ -65,11 +64,11 @@ WriteMakefile(
         provides => {
             'Selenium::PageObject' => {
                 file    => 'lib/Selenium/PageObject.pm',
-                version => '0.010'
+                version => '0.011'
             },
             'Selenium::Element' => {
                 file    => 'lib/Selenium/Element.pm',
-                version => '0.010'
+                version => '0.011'
             }
         }
     }

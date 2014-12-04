@@ -1,8 +1,9 @@
 package Selenium::PageObject;
 {
-    $Selenium::PageObject::VERSION = '0.010';
+    $Selenium::PageObject::VERSION = '0.011';
 }
 
+use 5.010;
 use strict;
 use warnings;
 
@@ -160,13 +161,19 @@ L<WWW::Selenium>
 
 L<Selenium::Remote::Driver>
 
-https://code.google.com/p/selenium/wiki/PageFactory for info about PageFactories, like this
+L<https://code.google.com/p/selenium/wiki/PageFactory>
+for info about PageFactories, like this
 
-https://code.google.com/p/selenium/wiki/PageObjects for more info about page objects themselves.
+L<https://code.google.com/p/selenium/wiki/PageObjects>
+for more info about page objects themselves.
 
 =head1 AUTHOR
 
 George S. Baugh <teodesian@cpan.org>
+
+=head1 CONTRIBUTORS
+
+Neil Bowers <neil@bowers.com> - Fixed minor distribution issues for 0.011
 
 =head1 SPECIAL THANKS
 

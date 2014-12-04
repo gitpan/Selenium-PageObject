@@ -21,7 +21,7 @@ license: artistic_2
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: '1.4'
-name: Selenium::PageObject
+name: Selenium-PageObject
 no_index:
   directory:
     - t
@@ -29,10 +29,10 @@ no_index:
 provides:
   Selenium::Element:
     file: lib/Selenium/Element.pm
-    version: '0.010'
+    version: '0.011'
   Selenium::PageObject:
     file: lib/Selenium/PageObject.pm
-    version: '0.010'
+    version: '0.011'
 requires:
   Carp: '0'
   Data::Random: '0'
@@ -42,4 +42,4 @@ requires:
   perl: '5.010'
 resources:
   repository: https://github.com/teodesian/Selenium-PageObjects-Perl.git
-version: '0.010'
+version: '0.011'
