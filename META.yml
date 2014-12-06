@@ -1,45 +1,47 @@
 ---
-abstract: 'Perl implementation of selenium PageObjects'
+abstract: "Selenium's PageObject pattern in Perl.  Now your module @ISA pageObject!"
 author:
   - 'George S. Baugh <teodesian@cpan.org>'
 build_requires:
   Cwd: '0'
-  ExtUtils::MakeMaker: '0'
   File::Basename: '0'
+  File::Spec: '0'
+  IO::Handle: '0'
+  IPC::Open3: '0'
   Selenium::Remote::Driver: '0'
   Test::Deep: '0'
   Test::Fatal: '0'
   Test::More: '0'
-  Test::Pod: '0'
-  Test::Pod::Coverage: '0'
   WWW::Selenium: '0'
 configure_requires:
   ExtUtils::MakeMaker: '0'
-dynamic_config: 1
-generated_by: 'ExtUtils::MakeMaker version 6.98, CPAN::Meta::Converter version 2.142060'
-license: artistic_2
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 5.025, CPAN::Meta::Converter version 2.142060'
+license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: '1.4'
 name: Selenium-PageObject
-no_index:
-  directory:
-    - t
-    - inc
 provides:
   Selenium::Element:
     file: lib/Selenium/Element.pm
-    version: '0.011'
+    version: '0.012'
   Selenium::PageObject:
     file: lib/Selenium/PageObject.pm
-    version: '0.011'
+    version: '0.012'
 requires:
   Carp: '0'
   Data::Random: '0'
   Scalar::Util: '0'
-  Selenium::Remote::Driver: '0'
+  Selenium::Remote::WDKeys: '0'
   Try::Tiny: '0'
   perl: '5.010'
+  strict: '0'
+  warnings: '0'
 resources:
-  repository: https://github.com/teodesian/Selenium-PageObjects-Perl.git
-version: '0.011'
+  bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Selenium-PageObject
+  homepage: https://github.com/teodesian/Selenium-PageObjects-Perl
+  repository: git://github.com/teodesian/Selenium-PageObjects-Perl.git
+version: '0.012'
+x_contributors:
+  - 'Neil Bowers <neil@bowers.com>'

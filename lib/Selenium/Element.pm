@@ -1,5 +1,9 @@
-package Selenium::Element;
+# ABSTRACT: Unified way of interacting with Selenium & WebDriver elements, with a focus on inputs.
+# PODNAME: Selenium::Element
 
+package Selenium::Element;
+$Selenium::Element::VERSION = '0.012';
+use 5.010;
 use strict;
 use warnings;
 
@@ -7,35 +11,6 @@ use Carp;
 use Scalar::Util qw(blessed reftype looks_like_number);
 use Data::Random;
 
-=head1 NAME
-
-Selenium::Element - Unified way of interacting with Selenium & WebDriver elements, with a focus on inputs.
-
-=head1 SYNOPSIS
-
-Smooths out the interface between WWW::Selenium and Selenium::Remote::Driver elements.
-Also creates a unified set/get interface for all inputs.
-
-=head1 CONSTRUCTOR
-
-=head2 new(ELEMENT,DRIVER,SELECTOR)
-
-Create a new Selenium::Element.  You should never have to use/override this except in the most extreme of circumstances.
-Use getElement/getElements instead.
-
-B<INPUTS>:
-
-I<ELEMENT (MIXED)> - Either the WWW::Selenium locator string or a Selenium::Remote::WebElement, depending on your driver
-
-I<DRIVER (MIXED)> - Either a WWW::Selenium element or false, depending on your driver (the WebElement has the driver in the latter case)
-
-I<SELECTOR (ARRAYREF[string])> - Arrayref of the form [selector,selectortype]
-
-B<OUTPUT>:
-
-  new Selenium::Element
-
-=cut
 
 sub new {
     my ($class,$element,$driver,$selector) = @_;
@@ -53,13 +28,6 @@ sub new {
     return $self;
 }
 
-=head1 GETTERS
-
-=head2 get_tag_name
-
-Returns the tag name of the Element object.
-
-=cut
 
 sub get_tag_name {
     my ($self) = @_;
@@ -74,11 +42,6 @@ sub get_tag_name {
     return $self->{'element'}->get_tag_name();
 }
 
-=head2 get_type
-
-Returns the type of the Element object if it is an input tag.
-
-=cut
 
 sub get_type {
     my $self = shift;
@@ -90,11 +53,6 @@ sub get_type {
 #Input specific stuf
 #TODO cache the results of all this stuff?
 
-=head2 is_input
-
-Returns whether the element is an input.
-
-=cut
 
 sub is_input {
     my ($self) = @_;
@@ -102,11 +60,6 @@ sub is_input {
     return $self->get_tag_name() eq 'input';
 }
 
-=head2 is_textinput
-
-Returns whether the element is an input with type 'text' or 'password' or a textarea.
-
-=cut
 
 sub is_textinput {
     my ($self) = @_;
@@ -116,11 +69,6 @@ sub is_textinput {
     return $ret || $self->get_tag_name() eq 'textarea';
 }
 
-=head2 is_select
-
-Returns whether the element is a select.
-
-=cut
 
 sub is_select {
     my ($self) = @_;
@@ -128,11 +76,6 @@ sub is_select {
     return $self->get_tag_name() eq 'select';
 }
 
-=head2 is_multiselect
-
-Returns whether the element is a select with the 'multiple' attribute.
-
-=cut
 
 sub is_multiselect {
     my $self = shift;
@@ -141,11 +84,6 @@ sub is_multiselect {
     return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'multiple') : $self->{'element'}->get_attribute('multiple');
 }
 
-=head2 is_radio
-
-Returns whether the element is a radio button.
-
-=cut
 
 sub is_radio {
     my ($self) = @_;
@@ -153,11 +91,6 @@ sub is_radio {
     return $self->get_type() eq 'radio';
 }
 
-=head2 is_checkbox
-
-Returns whether the element is a checkbox.
-
-=cut
 
 sub is_checkbox {
     my ($self) = @_;
@@ -165,11 +98,6 @@ sub is_checkbox {
     return $self->get_type() eq 'checkbox';
 }
 
-=head2 is_submit
-
-Returns whether the element is an input of the type 'submit'.
-
-=cut
 
 sub is_submit {
     my ($self) = @_;
@@ -177,11 +105,6 @@ sub is_submit {
     return $self->get_type() eq 'submit';
 }
 
-=head2 is_fileinput
-
-Returns whether the element is an input of the type 'file'.
-
-=cut
 
 sub is_fileinput {
     my ($self) = @_;
@@ -189,11 +112,6 @@ sub is_fileinput {
     return $self->get_type() eq 'file';
 }
 
-=head2 is_form
-
-Returns whether the element is a form.
-
-=cut
 
 sub is_form {
     my ($self) = @_;
@@ -202,11 +120,6 @@ sub is_form {
     return $self->get_tag_name() eq 'form';
 }
 
-=head2 is_option
-
-Returns whether the element is an option.
-
-=cut
 
 sub is_option {
     my ($self) = @_;
@@ -215,11 +128,6 @@ sub is_option {
     return $self->get_tag_name() eq 'option';
 }
 
-=head2 is_hiddeninput
-
-Returns whether the element is an input of type 'hidden'.
-
-=cut
 
 sub is_hiddeninput {
     my $self = shift;
@@ -227,11 +135,6 @@ sub is_hiddeninput {
     return $self->get_type() eq 'hidden';
 }
 
-=head2 is_enabled
-
-Returns whether the element is a disabled input.
-
-=cut
 
 sub is_enabled {
     my ($self) = @_;
@@ -240,17 +143,11 @@ sub is_enabled {
     return $self->{'driver'} ? $self->{'driver'}->is_editable($self->{'element'}) : $self->{'element'}->is_enabled();
 }
 
-=head2 get_options
-
-Returns a list containing Selenium::Element objects that are child options, if this object is a select.
-
-=cut
 
 sub get_options {
     my $self = shift;
     confess("Object parameters must be called by an instance") unless ref($self);
     return () unless $self->is_select();
-    my @options = ();
     if ($self->{'driver'}) {
         #XXX obviously not reliable
         carp("WARNING: WWW::Selenium has reduced ability to get options!  This may not work as you expect.");
@@ -261,17 +158,6 @@ sub get_options {
     return map {Selenium::Element->new($_,0)} @opts;
 }
 
-=head2 has_option(option)
-
-Returns whether this element has a child option with the provided name, provided this object is a select.
-
-B<INPUT>:
-I<OPTION (STRING)> - the name of the desired option
-
-B<OUTPUT>:
-I<BOOLEAN> - whether this object has said option as a child
-
-=cut
 
 #Convenience method for selects
 sub has_option {
@@ -282,11 +168,6 @@ sub has_option {
     return scalar(grep {$_->name eq $option} $self->get_options());
 }
 
-=head2 is_selected
-
-Returns whether the element is selected.
-
-=cut
 
 sub is_selected {
     my $self = shift;
@@ -295,24 +176,10 @@ sub is_selected {
     return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'selected') : $self->{'element'}->get_attribute('selected');
 }
 
-=head2 get
-
-Returns the current value of the element.
-
-B<OUTPUT>:
-
-I<MIXED> - Depends on the type of element.
-    Boolean for checkboxes, options and radiobuttons
-    Arrayrefs of option names for multi-selects
-    Strings for single selects, text/hidden inputs and non-inputs like paragraphs, table cells, etc.
-
-=cut
 
 sub get {
     my ($self) = @_;
     confess("Object parameters must be called by an instance") unless ref($self);
-
-    my $ret = 0;
 
     #Try to get various stuff based on what it is
     if ($self->is_checkbox || $self->is_radio) {
@@ -333,35 +200,18 @@ sub get {
     }
 }
 
-=head2 id
-
-Returns the element's id.
-
-=cut
 
 sub id {
     my $self = shift;
     return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'id') : $self->{'element'}->get_attribute('id');
 }
 
-=head2 name
-
-Returns the element's name.
-
-=cut
 
 sub name {
     my $self = shift;
     return $self->{'driver'} ? $self->{'driver'}->get_attribute($self->{'element'},'name') : $self->{'element'}->get_attribute('name');
 }
 
-=head1 SETTERS
-
-=head2 clear
-
-Clear a text input.
-
-=cut
 
 sub clear {
     my ($self) = @_;
@@ -378,24 +228,6 @@ sub clear {
     return 1;
 }
 
-=head2 set(value,[callback])
-
-Set the value of the input to the provided value, and execute the provided callback if provided.
-The callback will be provided with the caller and the selenium driver as arguments.
-
-B<INPUT>:
-
-I<VALUE (MIXED)> - STRING, BOOLEAN or ARRAYREF, depending on the type of element you are attempting to set.
-    Strings are for textinputs, hiddens or non-multi selects, Booleans for radiobuttons, checkboxes and options, and Arrayrefs of strings for multiselects.
-    Selects take the name of the option as arguments.
-
-I<CALLBACK (CODE) [optional]> - some anonymous function
-
-B<OUTPUT>:
-
-I<MIXED> - whether the set succeeded, or whatever your callback feels like returning, supposing you provided one.
-
-=cut
 
 sub set {
     my ($self,$value,$callback) = @_;
@@ -437,7 +269,7 @@ sub set {
             $value = [$value] if reftype($value) ne 'ARRAY';
             if ($self->{'driver'}) {
                 foreach my $val (@$value) {
-                    $self->{'driver'}->type($self->{'element'},$value);
+                    $self->{'driver'}->type($self->{'element'},$val);
                 }
             } else {
                 foreach my $val ($self->get_options()) {
@@ -469,23 +301,226 @@ sub _doCallback {
     return &$cb($self,$self->{'driver'} ? $self->{'driver'} : $self->{'element'}->{'driver'});
 }
 
+
+sub randomize {
+
+}
+
+
+sub javascript {
+    my ($self, $js) = @_;
+    confess("Object parameters must be called by an instance") unless ref($self);
+    return $self->{'driver'} ? $self->{'element'}->get_eval($js) : $self->{'element'}->{'driver'}->execute_script($js);
+}
+
+
+sub click {
+    my ($self,$callback) = @_;
+    confess("Object parameters must be called by an instance") unless ref($self);
+    confess("Callback must be subroutine") if defined($callback) && reftype($callback) ne 'CODE';
+    $self->{'driver'} ? $self->{'driver'}->click($self->{'element'}) : $self->{'element'}->click();
+
+    return $self->_doCallback($callback) || 1;
+}
+
+
+sub submit {
+    my ($self,$callback) = @_;
+    confess("Object parameters must be called by an instance") unless ref($self);
+    confess("Callback must be subroutine") if defined($callback) && reftype($callback) ne 'CODE';
+    return 0 if !$self->is_form();
+    $self->{'driver'} ? $self->{'driver'}->submit($self->{'element'}) : $self->{'element'}->submit();
+
+    return $self->_doCallback($callback) || 1;
+}
+
+1;
+
+__END__
+
+=pod
+
+=encoding UTF-8
+
+=head1 NAME
+
+Selenium::Element - Unified way of interacting with Selenium & WebDriver elements, with a focus on inputs.
+
+=head1 VERSION
+
+version 0.012
+
+=head1 SYNOPSIS
+
+    package ExamplePageObject;
+    use base qw{Selenium::PageObject};
+    sub do_something_returning_an_element {
+        my $self = shift;
+        return $self->getElement('radElement','id');
+    }
+    1;
+
+    use Selenium::Remote::Driver;
+
+    my $driver = Selenium::Remote::Driver->new({'remote_server_addr' => '127.0.0.1'});
+    my $pobj = ExamplePageObject->new($driver);
+    my $element = $pobj->do_something_returning_an_element();
+    my $status = $element->get();
+    $element->set('supercool') if $status ne 'supercool';
+
+=head1 DESCRIPTION
+
+Smooths out the interface between WWW::Selenium and Selenium::Remote::Driver elements.
+Also creates a unified set/get interface for all inputs.
+
+=head1 CONSTRUCTOR
+
+=head2 new(ELEMENT,DRIVER,SELECTOR)
+
+Create a new Selenium::Element.  You should never have to use/override this except in the most extreme of circumstances.
+Use getElement/getElements instead.
+
+B<INPUTS>:
+
+I<ELEMENT (MIXED)> - Either the WWW::Selenium locator string or a Selenium::Remote::WebElement, depending on your driver
+
+I<DRIVER (MIXED)> - Either a WWW::Selenium element or false, depending on your driver (the WebElement has the driver in the latter case)
+
+I<SELECTOR (ARRAYREF[string])> - Arrayref of the form [selector,selectortype]
+
+B<OUTPUT>:
+
+  new Selenium::Element
+
+=head1 GETTERS
+
+=head2 get_tag_name
+
+Returns the tag name of the Element object.
+
+=head2 get_type
+
+Returns the type of the Element object if it is an input tag.
+
+=head2 is_input
+
+Returns whether the element is an input.
+
+=head2 is_textinput
+
+Returns whether the element is an input with type 'text' or 'password' or a textarea.
+
+=head2 is_select
+
+Returns whether the element is a select.
+
+=head2 is_multiselect
+
+Returns whether the element is a select with the 'multiple' attribute.
+
+=head2 is_radio
+
+Returns whether the element is a radio button.
+
+=head2 is_checkbox
+
+Returns whether the element is a check box.
+
+=head2 is_submit
+
+Returns whether the element is an input of the type 'submit'.
+
+=head2 is_fileinput
+
+Returns whether the element is an input of the type 'file'.
+
+=head2 is_form
+
+Returns whether the element is a form.
+
+=head2 is_option
+
+Returns whether the element is an option.
+
+=head2 is_hiddeninput
+
+Returns whether the element is an input of type 'hidden'.
+
+=head2 is_enabled
+
+Returns whether the element is a disabled input.
+
+=head2 get_options
+
+Returns a list containing Selenium::Element objects that are child options, if this object is a select.
+
+=head2 has_option(option)
+
+Returns whether this element has a child option with the provided name, provided this object is a select.
+
+B<INPUT>:
+I<OPTION (STRING)> - the name of the desired option
+
+B<OUTPUT>:
+I<BOOLEAN> - whether this object has said option as a child
+
+=head2 is_selected
+
+Returns whether the element is selected.
+
+=head2 get
+
+Returns the current value of the element.
+
+B<OUTPUT>:
+
+I<MIXED> - Depends on the type of element.
+    Boolean for check boxes, options and radio buttons
+    Arrayrefs of option names for multi-selects
+    Strings for single selects, text/hidden inputs and non-inputs like paragraphs, table cells, etc.
+
+=head2 id
+
+Returns the element's id.
+
+=head2 name
+
+Returns the element's name.
+
+=head1 SETTERS
+
+=head2 clear
+
+Clear a text input.
+
+=head2 set(value,[callback])
+
+Set the value of the input to the provided value, and execute the provided callback if provided.
+The callback will be provided with the caller and the selenium driver as arguments.
+
+B<INPUT>:
+
+I<VALUE (MIXED)> - STRING, BOOLEAN or ARRAYREF, depending on the type of element you are attempting to set.
+    Strings are for text inputs, hidden inputs or non-multi selects, Booleans for radio buttons, check boxes and options, and Arrayrefs of strings for multi-selects.
+    Selects take the name of the option as arguments.
+
+I<CALLBACK (CODE) [optional]> - some anonymous function
+
+B<OUTPUT>:
+
+I<MIXED> - whether the set succeeded, or whatever your callback feels like returning, supposing you provided one.
+
 =head2 randomize(options)
 
 Randomizes the input, depending on the type of element.  Useful for fuzzing.
 
 B<INPUT>:
 
-I<HASH>: Options appropraite to the relevant Data::Random method.
+I<HASH>: Options appropriate to the relevant Data::Random method.
 
 B<OUTPUT>:
 
 I<MIXED> - Random value that has been set into the field, or false on failure.
-
-=cut
-
-sub randomize {
-
-}
 
 =head1 STATE CHANGE METHODS
 
@@ -502,28 +537,9 @@ B<OUTPUT>:
 
 I<MIXED> - depends on your javascript's output.
 
-=cut
-
-sub javascript {
-    my ($self, $js) = @_;
-    confess("Object parameters must be called by an instance") unless ref($self);
-    return $self->{'driver'} ? $self->{'element'}->get_eval($js) : $self->{'element'}->{'driver'}->execute_script($js);
-}
-
 =head2 click
 
 Click the element.
-
-=cut
-
-sub click {
-    my ($self,$callback) = @_;
-    confess("Object parameters must be called by an instance") unless ref($self);
-    confess("Callback must be subroutine") if defined($callback) && reftype($callback) ne 'CODE';
-    $self->{'driver'} ? $self->{'driver'}->click($self->{'element'}) : $self->{'element'}->click();
-
-    return $self->_doCallback($callback) || 1;
-}
 
 =head2 submit([callback])
 
@@ -533,25 +549,9 @@ B<INPUT>:
 
 I<CALLBACK (CODE) [optional]> - anonymous function
 
-B<OUPUT>:
+B<OUTPUT>:
 
 I<MIXED> - Whether the action succeeded or whatever your callback returns, supposing it was provided.
-
-=cut
-
-sub submit {
-    my ($self,$callback) = @_;
-    confess("Object parameters must be called by an instance") unless ref($self);
-    confess("Callback must be subroutine") if defined($callback) && reftype($callback) ne 'CODE';
-    return 0 if !$self->is_form();
-    $self->{'driver'} ? $self->{'driver'}->submit($self->{'element'}) : $self->{'element'}->submit();
-
-    return $self->_doCallback($callback) || 1;
-}
-
-1;
-
-__END__
 
 =head1 SEE ALSO
 
@@ -559,16 +559,24 @@ L<WWW::Selenium>
 
 L<Selenium::Remote::Driver>
 
+=head1 SPECIAL THANKS
+
+cPanel, Inc. graciously funded the initial work on this Module.
+
 =head1 AUTHOR
 
 George S. Baugh <teodesian@cpan.org>
 
-=head1 SPECIAL THANKS
+=head1 SOURCE
 
-cPanel, Inc. graciously funded the initial work on this Module.
+The development version is on github at L<http://github.com/teodesian/Selenium-PageObjects-Perl>
+and may be cloned from L<git://github.com/teodesian/Selenium-PageObjects-Perl.git>
 
 =head1 COPYRIGHT AND LICENSE
 
 This software is copyright (c) 2014 by George S. Baugh.
 
-This is free software; you can redistribute it and/or modify it under the same terms as the Perl 5 programming language system itself.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
